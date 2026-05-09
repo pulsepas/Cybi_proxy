@@ -2,7 +2,7 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install --no-audit --no-fund
+RUN npm install --include=dev --no-audit --no-fund
 
 COPY tsconfig.json ./
 COPY src ./src
