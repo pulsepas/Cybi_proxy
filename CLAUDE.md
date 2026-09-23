@@ -14,7 +14,7 @@
 
 - [src/index.ts](src/index.ts) — bootstrap: загрузка конфига, регистрация плагинов, graceful shutdown по SIGTERM/SIGINT.
 - [src/config.ts](src/config.ts) — Zod-схема ENV; падает с понятным выводом, если что-то невалидно.
-- [src/auth.ts](src/auth.ts) — `preHandler` хук на префикс `/v1/`, bearer через `Authorization: Bearer …` или `?token=`, сверка `timingSafeEqual`.
+- [src/auth.ts](src/auth.ts) — `preHandler` хук, регистрируется внутри scope'ов `/v1/*` (не по строке URL), bearer через `Authorization: Bearer …` или `?token=`, сверка `timingSafeEqual`.
 - [src/budget.ts](src/budget.ts) — in-memory счётчики STT-минут и LLM-токенов с UTC-rollover. Без персистентности; рестарт = сброс.
 - [src/routes/health.ts](src/routes/health.ts) — публичный `GET /health`, отдаёт uptime, какие upstream-ключи настроены, snapshot бюджета.
 - [src/routes/transcribe.ts](src/routes/transcribe.ts) — `WS /v1/transcribe`: открывает upstream к Deepgram, проксирует фреймы в обе стороны, KeepAlive каждые 8с, начисляет минуты при close, корректная пропагация close-кода (clamp в 1000–4999, замена 1005/1006/1015 на 1000).

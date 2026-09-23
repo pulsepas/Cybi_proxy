@@ -20,9 +20,10 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ab, bb);
 }
 
+// Register inside each encapsulated scope that owns /v1 routes: the hook then applies to
+// every route of that scope by routing, not by matching the raw (undecoded) URL string.
 export function registerAuth(app: FastifyInstance, cfg: Config) {
   app.addHook('preHandler', async (req, reply) => {
-    if (!req.url.startsWith('/v1/')) return;
     const token = extractToken(req);
     if (!token || !safeEqual(token, cfg.CLIENT_TOKEN)) {
       reply.code(401).send({ error: 'unauthorized' });

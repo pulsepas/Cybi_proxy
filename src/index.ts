@@ -41,13 +41,12 @@ async function main() {
     options: { maxPayload: 1 << 20 },
   });
 
-  registerAuth(app, cfg);
-
   await app.register(async (scope) => {
     await healthRoutes(scope, { cfg, budget });
   });
 
   await app.register(async (scope) => {
+    registerAuth(scope, cfg);
     await transcribeRoutes(scope, { cfg, budget });
   });
 
@@ -59,6 +58,7 @@ async function main() {
           rateLimit: (opts?: unknown) => (req: unknown, reply: unknown) => Promise<void>;
         }).rateLimit;
         scope.addHook('onRequest', rateLimitFactory());
+        registerAuth(scope, cfg);
         await llmRoutes(scope, { cfg, budget });
       },
       { prefix: '/v1/llm' },

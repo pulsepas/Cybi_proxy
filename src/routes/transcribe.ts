@@ -87,6 +87,10 @@ export async function transcribeRoutes(
           upstream.send(KEEPALIVE_MESSAGE);
         }
       }, KEEPALIVE_INTERVAL_MS);
+      // Client must not send audio before this: frames arriving earlier are dropped below.
+      if (clientSocket.readyState === WebSocket.OPEN) {
+        clientSocket.send(JSON.stringify({ type: 'ready' }));
+      }
     });
 
     upstream.on('message', (data, isBinary) => {

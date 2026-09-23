@@ -1,4 +1,4 @@
-import type { FastifyServerOptions } from 'fastify';
+import type { FastifyRequest, FastifyServerOptions } from 'fastify';
 import type { Config } from './config.js';
 
 export function buildLoggerOptions(cfg: Config): FastifyServerOptions['logger'] {
@@ -15,6 +15,16 @@ export function buildLoggerOptions(cfg: Config): FastifyServerOptions['logger'] 
         'body.input',
       ],
       censor: '[REDACTED]',
+    },
+    serializers: {
+      // Same fields as Fastify's default req serializer, but ?token= is masked in the URL.
+      req: (req: FastifyRequest) => ({
+        method: req.method,
+        url: req.url.replace(/([?&]token=)[^&#]*/gi, '$1[REDACTED]'),
+        host: req.host,
+        remoteAddress: req.ip,
+        remotePort: req.socket?.remotePort,
+      }),
     },
   };
 
